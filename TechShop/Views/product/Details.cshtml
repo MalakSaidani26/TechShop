@@ -1,0 +1,77 @@
+﻿@model TechShop.Models.Product
+@using System.Globalization
+
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - " + Model.GetLocalizedName(currentLanguage);
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-controller="Product" asp-action="List">@T("Produits", "Products", "المنتجات")</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.GetLocalizedName(currentLanguage)</li>
+        </ol>
+    </nav>
+
+    <div class="row gx-5">
+        <!-- Image produit -->
+        <div class="col-md-5 mb-4 mb-md-0">
+            <img alt="@Model.GetLocalizedName(currentLanguage)"
+                 src="@(string.IsNullOrEmpty(Model.ImageFileName) ? "/images/products/placeholder.svg" : $"/images/products/{Model.ImageFileName}")"
+                 class="img-fluid rounded shadow"
+                 onerror="this.src='/images/products/placeholder.svg'" />
+        </div>
+
+        <!-- Informations -->
+        <div class="col-md-7">
+            <p class="text-muted small mb-1">@Model.Category.GetLocalizedName(currentLanguage)</p>
+            <h2 class="mb-2">@Model.GetLocalizedName(currentLanguage)</h2>
+            <h5 class="text-muted mb-3">@Model.GetLocalizedShortDescription(currentLanguage)</h5>
+
+            @if (!string.IsNullOrWhiteSpace(Model.LongDescription))
+            {
+                <p class="mb-3">@Model.LongDescription</p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.TechnicalSpifications))
+            {
+                <div class="mb-3">
+                    <strong>@T("Spécifications techniques", "Technical specifications", "المواصفات التقنية") :</strong>
+                    <p class="text-muted">@Model.TechnicalSpifications</p>
+                </div>
+            }
+
+            <h3 class="fw-bold mb-3">@($"{Model.Price:0.00} DT")</h3>
+
+            <span class="badge @(Model.InStock ? "bg-success" : "bg-danger") mb-3">
+                @(Model.InStock ? T("✓ En stock", "✓ In stock", "✓ متوفر") : T("✗ Hors stock", "✗ Out of stock", "✗ غير متوفر"))
+            </span>
+
+            <div class="d-flex gap-2 mt-3">
+                @if (Model.InStock)
+                {
+                    <form method="post" asp-controller="Product" asp-action="AddToCart" class="m-0">
+                        <input type="hidden" name="productId" value="@Model.ProductId" />
+                        <button type="submit" class="btn btn-primary btn-lg cart-btn">
+                            <i class="fas fa-cart-plus me-2"></i>
+                            @T("Ajouter au panier", "Add to cart", "أضف إلى السلة")
+                        </button>
+                    </form>
+                }
+                <a asp-controller="Product" asp-action="List" class="btn btn-outline-secondary btn-lg">
+                    @T("Retour", "Back", "رجوع")
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+@model TechShop.ViewModels.AdminCustomersViewModel
+@using System.Globalization
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Clients";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">@T("Clients", "Customers", "العملاء")</h2>
+
+    @if (!Model.Customers.Any())
+    {
+        <div class="alert alert-info">@T("Aucun client.", "No customers.", "لا يوجد عملاء.")</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@T("Nom", "Name", "الاسم")</th>
+                        <th>@T("Email", "Email", "البريد الإلكتروني")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var customer in Model.Customers)
+                    {
+                        <tr>
+                            <td>@customer.FullName</td>
+                            <td>@customer.Email</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

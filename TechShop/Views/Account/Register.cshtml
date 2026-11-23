@@ -1,0 +1,74 @@
+@model RegisterViewModel
+@using System.Globalization
+
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Register";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5 auth-page">
+    <div class="auth-card auth-card-md">
+        <div class="auth-header text-center mb-4">
+            <div class="auth-icon mb-3"><i class="fas fa-user-plus"></i></div>
+            <h2 class="mb-1">@T("Créer un compte", "Create account", "إنشاء حساب")</h2>
+            <p class="text-muted mb-0">@T("Inscrivez-vous pour finaliser vos achats", "Sign up to complete your purchases", "سجّل لإتمام مشترياتك")</p>
+        </div>
+
+        <form method="post" asp-action="Register" novalidate>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">@T("Nom complet", "Full name", "الاسم الكامل")</label>
+                <input asp-for="FullName" class="form-control auth-input" placeholder="@T("Entrez votre nom complet", "Enter your full name", "أدخل اسمك الكامل")" />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">@T("Email", "Email", "البريد الإلكتروني")</label>
+                <input asp-for="Email" class="form-control auth-input" placeholder="@T("exemple@domaine.com", "example@domain.com", "example@domain.com")" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">@T("Mot de passe", "Password", "كلمة المرور")</label>
+                <div class="password-field">
+                    <input asp-for="Password" class="form-control auth-input auth-input-password" placeholder="@T("Minimum 4 caractères", "Minimum 4 characters", "4 أحرف على الأقل")" />
+                    <button type="button" class="password-toggle" data-target="Password" data-show-text="@T("Afficher", "Show", "إظهار")" data-hide-text="@T("Masquer", "Hide", "إخفاء")" aria-label="@T("Afficher le mot de passe", "Show password", "إظهار كلمة المرور")">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label">@T("Confirmer le mot de passe", "Confirm password", "تأكيد كلمة المرور")</label>
+                <div class="password-field">
+                    <input asp-for="ConfirmPassword" class="form-control auth-input auth-input-password" placeholder="@T("Répétez votre mot de passe", "Repeat your password", "أعد إدخال كلمة المرور")" />
+                    <button type="button" class="password-toggle" data-target="ConfirmPassword" data-show-text="@T("Afficher", "Show", "إظهار")" data-hide-text="@T("Masquer", "Hide", "إخفاء")" aria-label="@T("Afficher le mot de passe", "Show password", "إظهار كلمة المرور")">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary auth-btn-primary">@T("Créer", "Create", "إنشاء")</button>
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl" asp-route-lang="@currentLanguage" class="btn btn-outline-secondary auth-btn-secondary">
+                    @T("J'ai déjà un compte", "I already have an account", "لدي حساب بالفعل")
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

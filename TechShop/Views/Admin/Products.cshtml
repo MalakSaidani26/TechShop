@@ -1,0 +1,85 @@
+@model TechShop.ViewModels.AdminProductListViewModel
+@using System.Globalization
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Produits";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@T("Produits", "Products", "المنتجات")</h2>
+        <a class="btn btn-success" asp-action="CreateProduct">
+            <i class="fas fa-plus me-2"></i>@T("Ajouter un produit", "Add product", "إضافة منتج")
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var product in Model.Products)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <!-- Image -->
+                    @if (!string.IsNullOrEmpty(product.ImageFileName))
+                    {
+                        <img src="@($"/images/products/{product.ImageFileName}")" 
+                             class="card-img-top" 
+                             alt="@product.Name" 
+                             style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-image text-muted" style="font-size: 3rem;"></i>
+                        </div>
+                    }
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+
+                        <div class="mb-2">
+                            <small class="text-muted">@T("Catégorie", "Category", "الفئة"):</small>
+                            <p class="mb-1">@product.Category.GetLocalizedName(currentLanguage)</p>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted">@T("Prix", "Price", "السعر"):</small>
+                            <p class="mb-1 fw-bold">@product.Price.ToString("0.00") DT</p>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted">@T("Stock", "Stock", "المخزون"):</small>
+                            <p class="mb-1">
+                                <span class="badge @(product.InStock ? "bg-success" : "bg-danger")">
+                                    @(product.InStock ? T("En stock", "In stock", "متوفر") : T("Rupture", "Out of stock", "غير متوفر"))
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted">@T("Description", "Description", "الوصف"):</small>
+                            <p class="mb-1 small">@product.ShortDescription</p>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-sm btn-primary" asp-action="EditProduct" asp-route-id="@product.ProductId">
+                                    <i class="fas fa-edit me-2"></i>Modifier
+                                </a>
+                                <a class="btn btn-sm btn-info" asp-action="ViewProduct" asp-route-id="@product.ProductId">
+                                    <i class="fas fa-eye me-2"></i>@T("Voir détails", "View details", "عرض التفاصيل")
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

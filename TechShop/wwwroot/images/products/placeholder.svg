@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <!-- Gradient background -->
+  <defs>
+	<linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+	  <stop offset="0%" style="stop-color:#f0f0f0;stop-opacity:1" />
+	  <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+	</linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="300" height="300" fill="url(#bgGradient)"/>
+
+  <!-- Image icon -->
+  <g transform="translate(75, 75)">
+	<!-- Frame -->
+	<rect x="0" y="0" width="150" height="150" fill="none" stroke="#999" stroke-width="3" rx="5"/>
+
+	<!-- Sun (top right corner) -->
+	<circle cx="120" cy="30" r="15" fill="#FFB84D"/>
+
+	<!-- Mountains -->
+	<polygon points="20,80 60,40 100,70 150,20 150,150 0,150" fill="#8B9DC3"/>
+	<polygon points="40,90 75,55 110,85 150,40 150,150 0,150" fill="#6B7D9F"/>
+  </g>
+
+  <!-- Text -->
+  <text x="150" y="220" font-size="14" text-anchor="middle" fill="#999" font-family="Arial, sans-serif">
+	Pas d'image
+  </text>
+</svg>

@@ -1,0 +1,57 @@
+@model LoginViewModel
+@using System.Globalization
+
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Login";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5 auth-page">
+    <div class="auth-card auth-card-sm">
+        <div class="auth-header text-center mb-4">
+            <div class="auth-icon mb-3"><i class="fas fa-user-circle"></i></div>
+            <h2 class="mb-1">@T("Connexion", "Login", "تسجيل الدخول")</h2>
+            <p class="text-muted mb-0">@T("Accédez à votre compte pour continuer", "Access your account to continue", "ادخل إلى حسابك للمتابعة")</p>
+        </div>
+
+        <form method="post" asp-action="Login" novalidate>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">@T("Email", "Email", "البريد الإلكتروني")</label>
+                <input asp-for="Email" class="form-control auth-input" placeholder="@T("exemple@domaine.com", "example@domain.com", "example@domain.com")" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">@T("Mot de passe", "Password", "كلمة المرور")</label>
+                <div class="password-field">
+                    <input asp-for="Password" class="form-control auth-input auth-input-password" placeholder="@T("Entrez votre mot de passe", "Enter your password", "أدخل كلمة المرور")" />
+                    <button type="button" class="password-toggle" data-target="Password" data-show-text="@T("Afficher", "Show", "إظهار")" data-hide-text="@T("Masquer", "Hide", "إخفاء")" aria-label="@T("Afficher le mot de passe", "Show password", "إظهار كلمة المرور")">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary auth-btn-primary">@T("Se connecter", "Sign in", "تسجيل الدخول")</button>
+                <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl" asp-route-lang="@currentLanguage" class="btn btn-outline-secondary auth-btn-secondary">
+                    @T("Créer un compte", "Create account", "إنشاء حساب")
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

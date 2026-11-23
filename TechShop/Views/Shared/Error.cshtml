@@ -1,0 +1,32 @@
+﻿@model ErrorViewModel
+@using System.Globalization
+@{
+    var lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    string T(string fr, string en, string ar) => lang switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+
+    ViewData["Title"] = T("Erreur", "Error", "خطأ");
+}
+
+<h1 class="text-danger">@T("Erreur.", "Error.", "خطأ.")</h1>
+<h2 class="text-danger">@T("Une erreur est survenue lors du traitement de votre requête.", "An error occurred while processing your request.", "حدث خطأ أثناء معالجة طلبك.")</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>@T("ID de requête:", "Request ID:", "معرّف الطلب:")</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<h3>@T("Mode Développement", "Development Mode", "وضع التطوير")</h3>
+<p>
+    @T("Passer à l'environnement", "Switching to the", "الانتقال إلى بيئة") <strong>Development</strong> @T("affichera des détails supplémentaires sur l'erreur.", "environment will show detailed error information.", "سيعرض تفاصيل إضافية عن الخطأ.")
+</p>
+<p>
+    <strong>@T("L'environnement Development ne doit pas être activé en production.", "The Development environment should not be enabled in production.", "لا يجب تفعيل بيئة Development في الإنتاج.")</strong>
+    @T("Cela peut exposer des informations sensibles.", "This may expose sensitive information.", "قد يؤدي ذلك إلى كشف معلومات حساسة.")
+</p>

@@ -1,0 +1,172 @@
+﻿@using System.Globalization
+@inject TechShop.Models.IShoppingCartService ShoppingCartService
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    var cartCount = ShoppingCartService.GetTotalItemsCount();
+    var isAuthenticated = Context.Session.GetString("CurrentUser") is not null;
+    var currentUser = Context.Session.GetString("CurrentUser");
+    var currentUserEmail = Context.Session.GetString("CurrentUserEmail");
+    var isAdmin = string.Equals(currentUserEmail, "admin@techshop.local", StringComparison.OrdinalIgnoreCase);
+    var (languageLabel, languageFlagPath) = currentLanguage switch
+    {
+        "en" => ("English", "/images/flags/gb.svg"),
+        "ar" => ("العربية", "/images/flags/sa.svg"),
+        _ => ("Français", "/images/flags/fr.svg")
+    };
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<!DOCTYPE html>
+<html lang="@currentLanguage" dir="@(currentLanguage == "ar" ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> @ViewData["Title"]TechShop</title>
+    <link rel="icon" type="image/jpeg" href="~/images/logo.jpeg" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TechShop.styles.css" asp-append-version="true" />
+    <!-- ChatBot Widget CSS -->
+    <link rel="stylesheet" href="~/css/chatbot-widget.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-icon"> <i class="fas fa-laptop"> </i> </span>
+                    <span class="brand-text"> TechShop</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"> </span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            @if (isAdmin)
+                            {
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Products" asp-route-lang="@currentLanguage">@T("Produits", "Products", "المنتجات")</a>
+                            }
+                            else
+                            {
+                                <a class="nav-link" asp-area="" asp-controller="Product" asp-action="List">@T("Produits", "Products", "المنتجات")</a>
+                            }
+                        </li>
+                        @if (!isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index" asp-route-lang="@currentLanguage">
+                                    <i class="fas fa-shopping-cart me-1"></i>@T("Panier", "Cart", "السلة")
+                                    <span class="badge rounded-pill bg-danger cart-count-badge">@cartCount</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Order" asp-action="MyOrders" asp-route-lang="@currentLanguage">
+                                    @T("Mes commandes", "My orders", "طلباتي")
+                                </a>
+                            </li>
+                        }
+                        @if (isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Dashboard" asp-route-lang="@currentLanguage">
+                                    @T("Admin", "Admin", "الإدارة")
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <div class="d-flex align-items-center gap-2 navbar-actions">
+                        @if (isAuthenticated)
+                        {
+                            <span class="text-white small">@currentUser</span>
+                            <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+                                <button type="submit" class="btn btn-outline-light btn-sm">@T("Déconnexion", "Logout", "تسجيل الخروج")</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login" asp-route-lang="@currentLanguage">@T("Connexion", "Login", "تسجيل الدخول")</a>
+                        }
+                        <button class="btn btn-outline-light btn-sm theme-toggle" type="button" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle language-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img class="flag-icon" src="@languageFlagPath" alt="@languageLabel" />
+                                <span class="language-current">@languageLabel</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end language-menu">
+                                <li>
+                                    <button class="dropdown-item language-item @(currentLanguage == "fr" ? "active" : string.Empty)" type="button" onclick="setLanguage('fr')">
+                                        <img class="flag-icon" src="/images/flags/fr.svg" alt="Français" /> Français
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item language-item @(currentLanguage == "en" ? "active" : string.Empty)" type="button" onclick="setLanguage('en')">
+                                        <img class="flag-icon" src="/images/flags/gb.svg" alt="English" /> English
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="dropdown-item language-item @(currentLanguage == "ar" ? "active" : string.Empty)" type="button" onclick="setLanguage('ar')">
+                                        <img class="flag-icon" src="/images/flags/sa.svg" alt="العربية" /> العربية
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5> <i class="fas fa-laptop me-2"> </i> TechShop</h5>
+                    <p>@T("Votre destination pour les meilleurs produits technologiques.", "Your destination for the best tech products.", "وجهتك لأفضل المنتجات التقنية.")</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="#" title="Facebook"> <i class="fab fa-facebook fa-lg"> </i> </a>
+                        <a href="https://x.com" title="X" target="_blank" rel="noopener noreferrer" aria-label="X">
+                            <svg class="x-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M18.244 2H21.5l-7.12 8.136L22.75 22h-6.554l-5.132-6.694L5.2 22H1.94l7.616-8.705L1.5 2h6.72l4.64 6.116L18.244 2Zm-1.142 18h1.804L7.238 3.894H5.302L17.102 20Z"></path>
+                            </svg>
+                        </a>
+                        <a href="#" title="Instagram"> <i class="fab fa-instagram fa-lg"> </i> </a>
+                        <a href="#" title="LinkedIn"> <i class="fab fa-linkedin fa-lg"> </i> </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0"> &copy; @DateTime.Now.Year - TechShop. @T("Tous droits réservés.", "All rights reserved.", "جميع الحقوق محفوظة.")</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"> </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"> </script>
+    <script src="~/js/site.js" asp-append-version="true"> </script>
+    <!-- ChatBot Widget Script -->
+    <script src="~/js/chatbot-widget.js" asp-append-version="true"> </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,488 @@
+@model TechShop.ViewModels.AdminProductEditViewModel
+@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Modifier produit";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<style>
+    .admin-form-container {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(15, 52, 96, 0.12);
+        border-radius: 16px;
+        box-shadow: 0 16px 38px rgba(15, 52, 96, 0.15);
+        padding: 40px;
+        backdrop-filter: blur(8px);
+    }
+
+    .admin-form-header {
+        text-align: center;
+        margin-bottom: 35px;
+        padding-bottom: 30px;
+        border-bottom: 2px solid rgba(15, 52, 96, 0.1);
+    }
+
+    .admin-form-header h2 {
+        font-weight: 800;
+        letter-spacing: -0.4px;
+        color: #1a1a2e;
+        margin-bottom: 10px;
+    }
+
+    .admin-form-header p {
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+
+    .admin-form-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .admin-form-control,
+    .admin-form-select {
+        border: 1px solid rgba(15, 52, 96, 0.2);
+        border-radius: 10px;
+        padding: 11px 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background-color: #fafafa;
+    }
+
+    .admin-form-control:focus,
+    .admin-form-select:focus {
+        border-color: var(--ts-accent);
+        box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.12);
+        background-color: white;
+    }
+
+    textarea.admin-form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .admin-section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(15, 52, 96, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .admin-section-title i {
+        font-size: 1.3rem;
+        color: var(--ts-accent);
+    }
+
+    /* Image Upload Zone */
+    .image-upload-zone {
+        border: 2px dashed rgba(15, 52, 96, 0.2);
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background: rgba(15, 52, 96, 0.03);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .image-upload-zone:hover {
+        border-color: var(--ts-accent);
+        background: rgba(15, 52, 96, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .image-upload-zone.dragover {
+        border-color: var(--ts-accent);
+        background: rgba(15, 52, 96, 0.12);
+        box-shadow: 0 8px 24px rgba(15, 52, 96, 0.15);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--ts-accent);
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .upload-text {
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+        margin: 10px 0;
+    }
+
+    .upload-hint {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .image-preview-container {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .image-preview-container img {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(15, 52, 96, 0.15);
+    }
+
+    .image-preview-label {
+        display: block;
+        margin-top: 12px;
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Form Row Spacing */
+    .admin-form-row {
+        margin-bottom: 28px;
+    }
+
+    /* Checkbox/Toggle Switches */
+    .admin-form-check {
+        padding: 12px 15px;
+        background-color: rgba(15, 52, 96, 0.03);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(15, 52, 96, 0.1);
+    }
+
+    .admin-form-check:hover {
+        background-color: rgba(15, 52, 96, 0.08);
+    }
+
+    .admin-form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-top: 0.2rem;
+        cursor: pointer;
+    }
+
+    .admin-form-check-input:checked {
+        background-color: var(--ts-accent);
+        border-color: var(--ts-accent);
+    }
+
+    .admin-form-check-label {
+        cursor: pointer;
+        font-weight: 500;
+        margin-left: 8px;
+        user-select: none;
+    }
+
+    /* Buttons */
+    .admin-btn-submit {
+        background: linear-gradient(135deg, var(--ts-accent) 0%, #062a5e 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        color: white;
+        box-shadow: 0 8px 20px rgba(15, 52, 96, 0.15);
+    }
+
+    .admin-btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15, 52, 96, 0.2);
+        color: white;
+    }
+
+    .admin-btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .admin-btn-cancel {
+        background-color: #f0f0f0;
+        border: 1px solid #e0e0e0;
+        color: #333;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .admin-btn-cancel:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+        color: #333;
+    }
+
+    .admin-button-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 35px;
+        padding-top: 25px;
+        border-top: 1px solid rgba(15, 52, 96, 0.1);
+    }
+
+    .admin-input-group-text {
+        background-color: #fafafa;
+        border: 1px solid rgba(15, 52, 96, 0.2);
+        color: var(--ts-accent);
+        font-weight: 600;
+    }
+
+    .admin-input-group .admin-form-control {
+        border-left: none;
+    }
+
+    .admin-input-group .admin-form-control:focus {
+        border-color: var(--ts-accent);
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="admin-form-container">
+                <!-- Header -->
+                <div class="admin-form-header">
+                    <h2>@T("Modifier le produit", "Edit product", "تعديل المنتج")</h2>
+                    <p>@T("Mettez à jour les informations du produit ci-dessous", "Update the product information below", "قم بتحديث معلومات المنتج أدناه")</p>
+                </div>
+
+                    <!-- Form -->
+                    <form method="post" asp-action="EditProduct" asp-controller="Admin" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="ProductId" />
+
+                        <!-- Section 1: Information de Base -->
+                        <div class="admin-form-row">
+                            <h5 class="admin-section-title">
+                                <i class="fas fa-info-circle"></i>@T("Informations de base", "Basic Information", "المعلومات الأساسية")
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="admin-form-label">@T("Nom (Français)", "Name (French)", "الاسم (فرنسي)")</label>
+                                    <input type="text" class="form-control admin-form-control" asp-for="Name" required>
+                                    <span class="text-danger small" asp-validation-for="Name"></span>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="admin-form-label">@T("Nom (Anglais)", "Name (English)", "الاسم (إنجليزي)")</label>
+                                    <input type="text" class="form-control admin-form-control" asp-for="NameEn">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="admin-form-label">@T("Nom (Arabe)", "Name (Arabic)", "الاسم (عربي)")</label>
+                                    <input type="text" class="form-control admin-form-control" asp-for="NameAr">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Descriptions -->
+                        <div class="admin-form-row">
+                            <h5 class="admin-section-title">
+                                <i class="fas fa-file-alt"></i>@T("Descriptions", "Descriptions", "الأوصاف")
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="admin-form-label">@T("Description courte (FR)", "Short Description (FR)", "وصف قصير (FR)")</label>
+                                    <textarea class="form-control admin-form-control" rows="3" asp-for="ShortDescription"></textarea>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="admin-form-label">@T("Description courte (EN)", "Short Description (EN)", "وصف قصير (EN)")</label>
+                                    <textarea class="form-control admin-form-control" rows="3" asp-for="ShortDescriptionEn"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="admin-form-label">@T("Description courte (AR)", "Short Description (AR)", "وصف قصير (AR)")</label>
+                                <textarea class="form-control admin-form-control" rows="3" asp-for="ShortDescriptionAr"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="admin-form-label">@T("Description détaillée", "Detailed Description", "الوصف التفصيلي")</label>
+                                <textarea class="form-control admin-form-control" rows="4" asp-for="LongDescription"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="admin-form-label">@T("Spécifications techniques", "Technical Specifications", "المواصفات التقنية")</label>
+                                <textarea class="form-control admin-form-control" rows="4" asp-for="TechnicalSpifications"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Prix et Catégorie -->
+                        <div class="admin-form-row">
+                            <h5 class="admin-section-title">
+                                <i class="fas fa-tag"></i>@T("Prix et Catégorie", "Price and Category", "السعر والفئة")
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="admin-form-label">@T("Prix (DT)", "Price (DT)", "السعر (دينار)")</label>
+                                    <div class="input-group admin-input-group">
+                                        <span class="input-group-text admin-input-group-text"><i class="fas fa-coins"></i> DT</span>
+                                        <input type="number" step="0.01" class="form-control admin-form-control" asp-for="Price" required>
+                                    </div>
+                                    <span class="text-danger small" asp-validation-for="Price"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="admin-form-label">@T("Catégorie", "Category", "الفئة")</label>
+                                    <select class="form-select admin-form-select" asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required>
+                                    </select>
+                                    <span class="text-danger small" asp-validation-for="CategoryId"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Image -->
+                        <div class="admin-form-row">
+                            <h5 class="admin-section-title">
+                                <i class="fas fa-image"></i>@T("Télécharger l'image", "Upload Image", "تحميل الصورة")
+                            </h5>
+
+                            <div class="mb-3">
+                                <label class="admin-form-label fw-bold">@T("Importer une image", "Upload image", "تحميل صورة")</label>
+                                <div class="image-upload-zone" id="imageDropZone">
+                                    <input type="file" id="imageFile" name="imageFile" accept="image/*" class="d-none">
+                                    <div id="dropZoneContent">
+                                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                        <p class="upload-text">@T("Cliquez ou glissez-déposez", "Click or drag and drop", "انقر أو اسحب وأفلت")</p>
+                                        <p class="upload-hint">@T("JPG, PNG, GIF - Jusqu'à 5MB", "JPG, PNG, GIF - Up to 5MB", "JPG و PNG و GIF - حتى 5 ميجا بايت")</p>
+                                    </div>
+                                    <div class="image-preview-container" id="imagePreviewContainer">
+                                        <img id="imagePreview" src="" alt="@T("Aperçu", "Preview", "معاينة")">
+                                        <span class="image-preview-label" id="imageFileName"></span>
+                                    </div>
+                                </div>
+                                <input type="hidden" asp-for="ImageFileName" id="ImageFileName">
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Options -->
+                        <div class="admin-form-row">
+                            <h5 class="admin-section-title">
+                                <i class="fas fa-sliders-h"></i>@T("Options du produit", "Product Options", "خيارات المنتج")
+                            </h5>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check admin-form-check">
+                                        <input class="form-check-input admin-form-check-input" type="checkbox" asp-for="InStock" id="InStock">
+                                        <label class="form-check-label admin-form-check-label" for="InStock">
+                                            <i class="fas fa-check-circle me-2" style="color: #28a745;"></i>@T("En stock", "In stock", "متوفر")
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check admin-form-check">
+                                        <input class="form-check-input admin-form-check-input" type="checkbox" asp-for="IsProductOfTheWeek" id="IsProductOfTheWeek">
+                                        <label class="form-check-label admin-form-check-label" for="IsProductOfTheWeek">
+                                            <i class="fas fa-star me-2" style="color: #ffc107;"></i>@T("Produit de la semaine", "Product of the week", "منتج الأسبوع")
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="admin-button-group">
+                            <button type="submit" class="btn admin-btn-submit flex-grow-1">
+                                <i class="fas fa-save me-2"></i>@T("Enregistrer les modifications", "Save changes", "حفظ التغييرات")
+                            </button>
+                            <a class="btn admin-btn-cancel" asp-action="Products">
+                                <i class="fas fa-times me-2"></i>@T("Annuler", "Cancel", "إلغاء")
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const imageDropZone = document.getElementById('imageDropZone');
+        const imageFile = document.getElementById('imageFile');
+        const imagePreview = document.getElementById('imagePreview');
+        const dropZoneContent = document.getElementById('dropZoneContent');
+        const imageFileNameInput = document.getElementById('ImageFileName');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imageFileNameLabel = document.getElementById('imageFileName');
+
+        imageDropZone.addEventListener('click', () => imageFile.click());
+
+        imageDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageDropZone.classList.add('dragover');
+        });
+
+        imageDropZone.addEventListener('dragleave', () => {
+            imageDropZone.classList.remove('dragover');
+        });
+
+        imageDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageDropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageFile.files = files;
+                handleImageUpload();
+            }
+        });
+
+        imageFile.addEventListener('change', handleImageUpload);
+
+        function handleImageUpload() {
+            const file = imageFile.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('@T("L\'image dépasse 5MB", "Image exceeds 5MB", "الصورة تتجاوز 5 ميجا بايت")');
+                    return;
+                }
+
+                const fileName = `${Date.now()}_${file.name}`;
+                imageFileNameInput.value = fileName;
+                imageFileNameLabel.textContent = file.name;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.style.display = 'block';
+                    dropZoneContent.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Load existing image if present
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageFileNameValue = document.getElementById('ImageFileName').value;
+            if (imageFileNameValue) {
+                const imagePath = '/images/products/' + imageFileNameValue;
+                imagePreview.src = imagePath;
+                imagePreviewContainer.style.display = 'block';
+                dropZoneContent.style.display = 'none';
+                imageFileNameLabel.textContent = imageFileNameValue;
+            }
+        });
+    </script>
+}
+

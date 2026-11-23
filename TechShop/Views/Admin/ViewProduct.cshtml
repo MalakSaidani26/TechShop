@@ -1,0 +1,127 @@
+@model TechShop.ViewModels.AdminProductDetailsViewModel
+@using System.Globalization
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Détails produit";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Image produit -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                @if (!string.IsNullOrEmpty(Model.Product.ImageFileName))
+                {
+                    <img src="@($"/images/products/{Model.Product.ImageFileName}")" 
+                         class="card-img-top" 
+                         alt="@Model.Product.Name" 
+                         style="height: 300px; object-fit: cover;" />
+                }
+                else
+                {
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-image text-muted" style="font-size: 5rem;"></i>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Informations produit -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-3">@Model.Product.Name</h2>
+
+                    <!-- Noms multilingues -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>@T("Noms du produit", "Product names", "أسماء المنتج")</h6>
+                        <p class="mb-1"><strong>FR:</strong> @Model.Product.Name</p>
+                        <p class="mb-1"><strong>EN:</strong> @(Model.Product.NameEn ?? "-")</p>
+                        <p><strong>AR:</strong> @(Model.Product.NameAr ?? "-")</p>
+                    </div>
+
+                    <!-- Prix et Stock -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">@T("Prix", "Price", "السعر")</small>
+                                <p class="fs-5 fw-bold text-danger">@Model.Product.Price.ToString("0.00") DT</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">@T("Stock", "Stock", "المخزون")</small>
+                                <p>
+                                    <span class="badge @(Model.Product.InStock ? "bg-success" : "bg-danger") fs-6">
+                                        @(Model.Product.InStock ? T("En stock", "In stock", "متوفر") : T("Rupture", "Out of stock", "غير متوفر"))
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Catégorie et semaine -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">@T("Catégorie", "Category", "الفئة")</small>
+                                <p>@Model.Product.Category.GetLocalizedName(currentLanguage)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded">
+                                <small class="text-muted">@T("Produit de la semaine", "Product of the week", "منتج الأسبوع")</small>
+                                <p>
+                                    <span class="badge @(Model.Product.IsProductOfTheWeek ? "bg-info" : "bg-secondary")">
+                                        @(Model.Product.IsProductOfTheWeek ? T("Oui", "Yes", "نعم") : T("Non", "No", "لا"))
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descriptions -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>@T("Description courte", "Short description", "الوصف القصير")</h6>
+                        <p>@Model.Product.GetLocalizedShortDescription(currentLanguage)</p>
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>@T("Description longue", "Long description", "الوصف الطويل")</h6>
+                        <p>@(Model.Product.LongDescription ?? "-")</p>
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>@T("Spécifications techniques", "Technical specifications", "المواصفات التقنية")</h6>
+                        <p>@(Model.Product.TechnicalSpifications ?? "-")</p>
+                    </div>
+
+                    <!-- Images URLs -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <h6>@T("Images", "Images", "الصور")</h6>
+                        <p class="mb-2"><strong>Nom fichier:</strong> @(Model.Product.ImageFileName ?? "-")</p>
+                        <p class="mb-2"><strong>URL image:</strong> <code>@(Model.Product.ImageUrl ?? "-")</code></p>
+                        <p><strong>URL miniature:</strong> <code>@(Model.Product.ImageThumbnailUrl ?? "-")</code></p>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="d-flex gap-2 mt-4">
+                        <a class="btn btn-primary" asp-action="EditProduct" asp-route-id="@Model.Product.ProductId">
+                            <i class="fas fa-edit me-2"></i>@T("Modifier", "Edit", "تعديل")
+                        </a>
+                        <a class="btn btn-outline-secondary" asp-action="Products">
+                            <i class="fas fa-arrow-left me-2"></i>@T("Retour", "Back", "العودة")
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

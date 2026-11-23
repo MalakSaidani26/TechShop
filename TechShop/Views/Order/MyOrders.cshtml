@@ -1,0 +1,69 @@
+@model TechShop.ViewModels.CustomerOrdersViewModel
+@using System.Globalization
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Mes commandes";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">@T("Mes commandes", "My orders", "طلباتي")</h2>
+
+    @if (TempData["CheckoutMessage"] is string confirmMsg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>@T("Commande confirmée !", "Order confirmed!", "تم تأكيد الطلب!")</strong>
+            @confirmMsg
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Orders.Any())
+    {
+        <div class="alert alert-info">@T("Aucune commande pour le moment.", "No orders yet.", "لا توجد طلبات بعد.")</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>@T("Référence", "Reference", "المرجع")</th>
+                        <th>@T("Date", "Date", "التاريخ")</th>
+                        <th>@T("Statut", "Status", "الحالة")</th>
+                        <th>@T("Montant", "Amount", "المبلغ")</th>
+                        <th>@T("Actions", "Actions", "الإجراءات")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(order.Status == TechShop.Models.OrderStatus.Validated ? T("Validé", "Validated", "تم التأكيد") : T("En attente", "Pending", "قيد الانتظار"))</td>
+                            <td>@order.TotalAmount.ToString("0.00") DT</td>
+                            <td>
+                                @if (order.Status == TechShop.Models.OrderStatus.Validated)
+                                {
+                                    <a href="@Url.Action("DownloadInvoice", "Order", new { orderId = order.OrderId })" 
+                                       class="btn btn-sm btn-primary" 
+                                       title="@T("Télécharger la facture", "Download invoice", "تحميل الفاتورة")">
+                                        <i class="fas fa-file-pdf me-1"></i>
+                                        @T("Facture", "Invoice", "فاتورة")
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

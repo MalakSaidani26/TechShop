@@ -1,0 +1,68 @@
+@model TechShop.ViewModels.AdminOrdersViewModel
+@using System.Globalization
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Admin Orders";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">@T("Commandes", "Orders", "الطلبات")</h2>
+
+    @if (!Model.Orders.Any())
+    {
+        <div class="alert alert-info">@T("Aucune commande.", "No orders.", "لا توجد طلبات.")</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>@T("Référence", "Reference", "المرجع")</th>
+                        <th>@T("Client", "Customer", "العميل")</th>
+                        <th>@T("Email", "Email", "البريد الإلكتروني")</th>
+                        <th>@T("Date", "Date", "التاريخ")</th>
+                        <th>@T("Statut", "Status", "الحالة")</th>
+                        <th>@T("Montant", "Amount", "المبلغ")</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td>@order.OrderId</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.CustomerEmail</td>
+                            <td>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@(order.Status == TechShop.Models.OrderStatus.Validated ? T("Validé", "Validated", "تم التأكيد") : T("En attente", "Pending", "قيد الانتظار"))</td>
+                            <td>@order.TotalAmount.ToString("0.00") DT</td>
+                            <td class="text-end">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    @if (order.Status == TechShop.Models.OrderStatus.Pending)
+                                    {
+                                        <form method="post" asp-action="ValidateOrder">
+                                            <input type="hidden" name="orderId" value="@order.OrderId" />
+                                            <button type="submit" class="btn btn-sm btn-success">@T("Valider", "Validate", "اعتماد")</button>
+                                        </form>
+                                    }
+                                    <form method="post" asp-action="DeleteOrder">
+                                        <input type="hidden" name="orderId" value="@order.OrderId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">@T("Supprimer", "Delete", "حذف")</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

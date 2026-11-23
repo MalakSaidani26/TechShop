@@ -1,0 +1,65 @@
+# Build results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+*.vcxproj.filters
+.DS_Store
+
+# Local database files
+*.mdf
+*.ldf
+*.ndf
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+nuget.config
+
+# User-specific files
+appsettings.*.local.json
+secrets.json
+local.env
+
+# Logs
+logs/
+*.log
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node (if used for frontend)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Azure
+.env
+.env.local
+*.publishsettings
+
+# SSL Certificates (dev only)
+*.pfx
+*.pem
+*.key
+
+# Environment files
+.env.development
+.env.production

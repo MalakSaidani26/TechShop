@@ -1,0 +1,82 @@
+@model CartViewModel
+@using System.Globalization
+
+@{
+    var currentLanguage = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+    ViewData["Title"] = " - Cart";
+
+    string T(string fr, string en, string ar) => currentLanguage switch
+    {
+        "en" => en,
+        "ar" => ar,
+        _ => fr
+    };
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">@T("Mon panier", "My Cart", "سلتي")</h2>
+
+    @if (TempData["CheckoutMessage"] is string checkoutMessage)
+    {
+        <div class="alert alert-success">@checkoutMessage</div>
+    }
+
+    @if (TempData["AuthRequiredMessage"] is string authRequiredMessage)
+    {
+        <div class="alert alert-warning">@authRequiredMessage</div>
+    }
+
+    @if (!Model.Items.Any())
+    {
+        <div class="alert alert-info">@T("Votre panier est vide.", "Your cart is empty.", "سلتك فارغة.")</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>@T("Produit", "Product", "المنتج")</th>
+                        <th>@T("Prix", "Price", "السعر")</th>
+                        <th>@T("Quantité", "Quantity", "الكمية")</th>
+                        <th>@T("Total", "Total", "المجموع")</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@($"{item.UnitPrice:0.00} DT")</td>
+                            <td>@item.Quantity</td>
+                            <td>@($"{item.TotalPrice:0.00} DT")</td>
+                            <td class="text-end">
+                                <form method="post" asp-action="Remove" class="d-inline">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">@T("Supprimer", "Remove", "حذف")</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">@T("Total général", "Grand total", "الإجمالي")</th>
+                        <th>@($"{Model.TotalAmount:0.00} DT")</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-controller="Cart" asp-action="ContinuePurchase" asp-route-lang="@currentLanguage" class="btn btn-primary">
+                @T("Continuer avec achat", "Continue to checkout", "المتابعة للشراء")
+            </a>
+            <form method="post" asp-action="Clear">
+                <button type="submit" class="btn btn-outline-danger">@T("Vider le panier", "Clear cart", "تفريغ السلة")</button>
+            </form>
+        </div>
+    }
+</div>
