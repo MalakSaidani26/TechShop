@@ -258,46 +258,7 @@ dotnet run
 dotnet run
 ```
 
-### Production (Release)
-```bash
-dotnet publish -c Release -o ./publish
-```
 
-### Azure
-```bash
-az webapp up --name TechShop --resource-group MyGroup --runtime dotnetcore:latest
-```
-
-### Docker
-```bash
-docker build -t techshop .
-docker run -p 5000:5000 techshop
-```
-
----
-
-## 🔐 Sécurité
-
-**Actuellement:** Authentification simple (Mock) pour dev
-
-**Pour la production, ajoutez:**
-- Base de données réelle
-- Hachage des mots de passe (BCrypt)
-- OAuth/OIDC (Google, GitHub)
-- HTTPS avec certificat valide
-- Protection CSRF/XSS
-
----
-
-## 🎯 Roadmap Future
-
-- [ ] Base de données SQL Server
-- [ ] Authentification OAuth
-- [ ] Paiement Stripe/PayPal
-- [ ] Email de confirmation
-- [ ] Notifications en temps réel
-- [ ] Tests unitaires
-- [ ] API REST publique
 
 ---
 
@@ -326,61 +287,4 @@ public class productService {
 
 ---
 
-## 📊 Statistiques
-
-```
-Backend:          ASP.NET Core 10 + Razor Pages
-Frontend:         Bootstrap 5 + jQuery
-Code Lines:       ~5,000+
-Controllers:      7
-Models:           20+
-Views:            15+
-Produits Demo:    6
-Langues:          3
-Prêt Production:  Besoin DB + Auth
-```
-
----
-
-## 📄 Licence
-
-MIT License - Libre d'utiliser, modifier, distribuer
-
----
-
-## 🤝 Comment Contribuer
-
-1. **Fork** le projet
-2. **Créez une branche** `git checkout -b feature/MaFeature`
-3. **Modifiez le code** et testez
-4. **Committez** `git commit -m 'Add: Brève description'`
-5. **Poussez** `git push origin feature/MaFeature`
-6. **Ouvrez une PR** sur GitHub
-
----
-
-## 📧 Support
-
-- 💬 Ouvrez une **Issue** GitHub
-- 📚 Consultez le code source (bien commenté)
-- 🔗 Visitez [ASP.NET Learn](https://learn.microsoft.com/aspnet/core/)
-
----
-
-## 🏆 Crédits
-
-Développé avec ❤️ en **C# / ASP.NET Core 10**
-
-**Technologies:**
-- Microsoft .NET 10
-- Visual Studio Community 2026
-- Bootstrap 5
-- jQuery
-- QuestPDF
-
----
-
-**Prêt à coder?** Clonez le repo et lancez `dotnet run`! 🚀
-
-Dernière mise à jour: 2024
 
